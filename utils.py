@@ -2,12 +2,14 @@ import urllib.request as ul
 from bs4 import BeautifulSoup as soup
 
 
-def get_bets(tournament, verbose=False):
+def get_bets(tournament, verbose=True):
     if verbose:
         print("\n ------------- ( " + tournament + " ) -----------------")
 
     football_url = "https://easyodds.com/football/" + tournament
-    print(football_url)
+    
+    if verbose:
+        print(football_url)
 
     req = ul.Request(football_url)
 
