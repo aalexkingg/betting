@@ -17,55 +17,27 @@ def get_bets(tournament, verbose=False):
 
     pagesoup = soup(htmldata, "html.parser")
     row = pagesoup.findAll('a', {"class": "eo-match"})
-    ##### THIS DOESNT RETURN ALL BETS
-    # href =
-    print(row , " : this is the bets fetched from website")
+
+    if verbose:
+        print(row , " : this is the bets fetched from website")
+        
     bets = []
 
     for item in row:
-
-        #game = item.find_next('a')
-        game_link = item['href']
-
-        """
-        game_req = ul.Request(game_link)
-
-        client = ul.urlopen(game_req)
-        htmldata = client.read()
-        client.close()
-    
-        pagesoup = soup(htmldata, "html.parser")
-
-        rows = pagesoup.findAll('div', {'class': 'eo-outcome'})
-
-        temp = [bet.findAllNext('a', {'class': 'eo-bestBookie-odds'}) for bet in rows]
-
-        for a in temp:
-            print(a)
-        """
-        """
-        for bet in rows:
-            bets = bet.findAllNext('div', {'class': 'eo-actions-bestBookie'})
-
-            for temp in bets:
-                temp1 = temp.findAllNext('a', {'class': 'eo-bestBookie-odds'})
-                
-                
-                
-                print(temp1)
-
-            #print(bets)
-        """
-
+        # Get home team object
         home = item.find_next('span', {'class': 'match-side itm-side1'})
+        # Get draw object
         draw = item.find_next('span', {'class': 'draw-odds'})
+        # Get away team object
         away = item.find_next('span', {'class': 'match-side itm-side2'})
 
+        # Get data from home object
         home_name = home.find_next('span', {'class': 'side-name'}).text.strip()
         home_bet = home.find_next('span', {'class': 'side-odds'}).text.strip()
 
         draw_bet = draw.text.strip()
 
+        # Get data from away object
         away_name = away.find_next('span', {'class': 'side-name'}).text.strip()
         away_bet = away.find_next('span', {'class': 'side-odds'}).text.strip()
 
@@ -73,6 +45,7 @@ def get_bets(tournament, verbose=False):
             print(home_name + " vs " + away_name)
             print(home_bet + " " + draw_bet + " " + away_bet)
 
+        # Calculate bet odds as decimal
         bet1 = float(home_bet.split("/")[0]) / float(home_bet.split("/")[1])
         bet2 = float(draw_bet.split("/")[0]) / float(draw_bet.split("/")[1])
         bet3 = float(away_bet.split("/")[0]) / float(away_bet.split("/")[1])
@@ -80,47 +53,6 @@ def get_bets(tournament, verbose=False):
         bets.append([home_name, away_name, bet1, bet2, bet3])
 
     return bets
-
-##def get_odds():
-    tournaments = ['premier-league', 'uefa-champions-league']
-    odds = []
-    bets_tournaments = {}
-
-    for t in tournaments:
-
-        print("\n ------------- ( " + t + " ) -----------------")
-
-        football_url = "https://easyodds.com/football/" + t
-        req = ul.Request(football_url)
-        client = ul.urlopen(req)
-        htmldata = client.read()
-        client.close()
-
-        pagesoup = soup(htmldata, "html.parser")
-        itemlocator = pagesoup.findAll('div', {"class": "tournament-event__row"})
-
-        bets = {}
-
-        for item in itemlocator:
-            home = item.find_next('div', {'class': 'tournament-event__cell event-team event-team-home'})
-            draw = item.find_next('div', {'class': 'tournament-event__cell event-draw'})
-            away = item.find_next('div', {'class': 'tournament-event__cell event-team event-team-away'})
-
-            home_name = (home.find_next('div', {'class': 'event-team__name'})).text.strip()
-            home_bet = (home.find_next('span', {'class': 'odds-button'})).text.strip()
-
-            draw_bet = (draw.find_next('span', {'class': 'odds-button'})).text.strip()
-
-            away_name = (away.find_next('div', {'class': 'event-team__name'})).text.strip()
-            away_bet = (away.find_next('span', {'class': 'odds-button'})).text.strip()
-
-            print(home_name + " vs " + away_name)
-            print(home_bet + " " + draw_bet + " " + away_bet)
-
-            # Figure out return format for bets
-            odds.append([home_name,away_name,float(home_bet), float(draw_bet), float(away_bet)])
-        print(odds)
-        return odds
 
 
 class PayPal:
